@@ -22,7 +22,15 @@ class SPYVSCONKER_API UBasicAttributeSet : public UAttributeSet
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(BlueprintReadOnly, Category="Attributes"/*, ReplicatedUsing = OnRep_Health*/)
+
+	UPROPERTY(BlueprintReadOnly, Category="Attributes" /*ReplicatedUsing = OnRep_Health*/)
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UBasicAttributeSet, Health);
+
+	/*UFUNCTION()
+	void OnRep_Health(const FGameplayAttributeData& OldHealth);
+
+protected:
+	UFUNCTION()
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;*/
 };
