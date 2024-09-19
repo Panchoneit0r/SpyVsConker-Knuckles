@@ -55,4 +55,27 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FollowCamera; }
 
+private:
+
+	UPROPERTY(EditAnywhere, Category="Stats")
+	float walkSpeed;
+
+	UPROPERTY(EditAnywhere, Category="Stats")
+	float runSpeed;
+
+	UPROPERTY(EditAnywhere, Category="Stats")
+	float health;
+
+	UPROPERTY(EditAnywhere, Category="Stats")
+	float maxHealth;
+
+public:
+	
+	void Running();
+
+	void Walking();
+
+	void Attack();
+
+	void Ability1();
 };
