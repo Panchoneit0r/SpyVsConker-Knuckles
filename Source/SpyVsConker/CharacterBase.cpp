@@ -16,6 +16,10 @@ ACharacterBase::ACharacterBase()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
+
+	// Configure character movement
+	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 0.0f, 500.0f);
 	
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -37,6 +41,10 @@ ACharacterBase::ACharacterBase()
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	health = maxHealth - 10;
+	
+	GetCharacterMovement()->MaxWalkSpeed = walkSpeed;
 	
 	if (AbilitySystemComponent) 
 	{
@@ -49,4 +57,34 @@ void ACharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ACharacterBase::Running()
+{
+	GetCharacterMovement()->MaxWalkSpeed = runSpeed;
+}
+
+void ACharacterBase::Walking()
+{
+	GetCharacterMovement()->MaxWalkSpeed = walkSpeed;
+}
+
+void ACharacterBase::Attack()
+{
+	GEngine->AddOnScreenDebugMessage(
+		-1,
+		2.0f,
+		FColor::Blue,
+		FString::Printf(TEXT("vida actual del player: %f"), health)
+		);
+}
+
+void ACharacterBase::Ability1()
+{
+	GEngine->AddOnScreenDebugMessage(
+		-1,
+		2.0f,
+		FColor::Blue,
+		FString::Printf(TEXT("Vida maxima del player: %f"), maxHealth)
+		);
 }
