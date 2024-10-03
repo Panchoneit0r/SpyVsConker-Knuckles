@@ -89,6 +89,7 @@ protected:
 
 	virtual void InitializeAttributes();
 
+public:
 	virtual void AddStartupEffects();
 	
 	virtual void SetHealth(float Health);
