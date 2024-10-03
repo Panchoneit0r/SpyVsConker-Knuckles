@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
-#include "BasicAttributeSet.h"
+#include "GameplayTagContainer.h"
 #include "CharacterBase.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDiedDelegate, ACharacterBase*, Character);
 
 class USkeletalMeshComponent;
 class USceneComponent;
@@ -19,6 +21,9 @@ class SPYVSCONKER_API ACharacterBase : public ACharacter, public IAbilitySystemI
 	GENERATED_BODY()
 
 public:
+	// Sets default values for this character's properties
+	ACharacterBase(const class FObjectInitializer& ObjectInitializer);
+
 	/** Pawn mesh: 1st person view (arms; seen only by self) */
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	USkeletalMeshComponent* Mesh1P;
@@ -29,53 +34,63 @@ public:
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
-	// Sets default values for this character's properties
-	ACharacterBase();
 
+	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
+	
+	UCameraComponent* GetFirstPersonCameraComponent() const { return FollowCamera; }
+	
+	UPROPERTY(BlueprintAssignable, Category="GAS|Character")
+	FCharacterDiedDelegate OnCharacterDied;
+
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	UFUNCTION(BlueprintCallable, Category="GAS|Character")
+	virtual bool IsAlive() const;
+
+	virtual void RemoveCharacterAbilities();
+
+	UFUNCTION(BlueprintCallable, Category = "GAS|Character|Attributes")
+	float GetHealth() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GAS|Character|Attributes")
+	float GetMaxHealth() const;
+
+	virtual void Die();
+
+	UFUNCTION(BlueprintCallable, Category = "GAS|Character")
+	virtual void FinishDying();
+
+	virtual void PossessedBy(AController* NewController) override;
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAS", meta=(AllowPrivateAccess))
-	class UAbilitySystemComponent* AbilitySystemComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="GAS", meta=(AllowPrivateAcces="true"))
-	const class UBasicAttributeSet* BasicAttributeSet;
-
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override
-	{
-		return AbilitySystemComponent;
-	}
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	TWeakObjectPtr<class UAbilitySystemComponent> AbilitySystemComponent;
+	TWeakObjectPtr<class UBasicAttributeSet> AttributeSetBase;
 
-	/** Returns Mesh1P subobject **/
-	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
-	/** Returns FirstPersonCameraComponent subobject **/
-	UCameraComponent* GetFirstPersonCameraComponent() const { return FollowCamera; }
+	FGameplayTag DeadTag;
+	FGameplayTag EffectRemoveOnDeathTag;
 
-private:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GAS|Animation")
+	UAnimMontage* DeathMontage;
 
-	UPROPERTY(EditAnywhere, Category="Stats")
-	float walkSpeed;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GAS|Abilities")
+	TArray<TSubclassOf<class UGameplayAbility>> CharacterAbilities;
 
-	UPROPERTY(EditAnywhere, Category="Stats")
-	float runSpeed;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GAS|Abilities")
+	TSubclassOf<class UGameplayEffect> DefaultAttributes;
 
-	UPROPERTY(EditAnywhere, Category="Stats")
-	float health;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GAS|Abilities")
+	TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
 
-	UPROPERTY(EditAnywhere, Category="Stats")
-	float maxHealth;
+	virtual void OnRep_PlayerState() override;
+
+	virtual void AddCharacterAbilities();
+
+	virtual void InitializeAttributes();
 
 public:
+	virtual void AddStartupEffects();
 	
-	void Running();
-
-	void Walking();
-
-	void Attack();
-
-	void Ability1();
+	virtual void SetHealth(float Health);
 };
