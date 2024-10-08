@@ -77,7 +77,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GAS|Abilities")
 	TArray<TSubclassOf<class UGameplayAbility>> CharacterAbilities;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GAS|Abilities")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GAS|Abilities")
 	TSubclassOf<class UGameplayEffect> DefaultAttributes;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GAS|Abilities")

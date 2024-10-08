@@ -3,8 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "HUDWidget.h"
+#include "UI/HUDWidget.h"
 #include "GameFramework/PlayerController.h"
+#include "Player/PlayerStateGameplay.h"
 #include "PlayerController_Gameplay.generated.h"
 
 /**
@@ -25,7 +26,8 @@ public:
 	void SetRespawnCountdown_Implementation(float RespawnTimeRemaining);
 	bool SetRespawnCountdown_Validate(float RespawnTimeRemaining);
 
-	
+	UFUNCTION(BlueprintCallable)
+	APlayerStateGameplay* GetCurrentPlayerState();
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="UI")

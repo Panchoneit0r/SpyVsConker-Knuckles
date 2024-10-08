@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AsyncTaskAttributeChange.h"
+#include "Tasks/AsyncTaskAttributeChange.h"
 
 UAsyncTaskAttributeChange* UAsyncTaskAttributeChange::ListenForAttributeChange(UAbilitySystemComponent* AbilitySystemComponent, FGameplayAttribute Attribute)
 {

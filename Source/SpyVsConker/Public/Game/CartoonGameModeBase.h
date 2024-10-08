@@ -4,19 +4,31 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Characters/CharacterBase.h"
 #include "CartoonGameModeBase.generated.h"
 
 /**
  * 
  */
-UCLASS()
-class SPYVSCONKER_API ACartoonGameModeBase : public AGameModeBase
+UCLASS(minimalapi)
+class ACartoonGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 public:
+	ACartoonGameModeBase();
+
 	UFUNCTION(BlueprintPure, Category = "Youswar Global", Meta = (WorldContext = "WorldContextObject", DisplayName = "YousWar Game Mode"))
 	static ACartoonGameModeBase* Get(const UObject* WorldContextObject);
 	
 	virtual void BeginPlay() override;
-	
+
+	void PlayerDied(AController* Controller);
+
+	void RespawnPlayer(AController* Controller);
+
+	//void PossessPlayer(AController* Controller, ACharacterBase* PlayerCharacter);
+protected:
+	float RespawnDelay;
+
+	TSubclassOf<ACharacterBase> PlayerClass;
 };

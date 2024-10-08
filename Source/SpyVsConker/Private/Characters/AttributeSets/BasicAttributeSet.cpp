@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BasicAttributeSet.h"
+#include "Characters/AttributeSets/BasicAttributeSet.h"
 #include "Net/UnrealNetwork.h"
 
 void UBasicAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)

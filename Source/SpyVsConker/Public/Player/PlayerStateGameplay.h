@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
 #include "AbilitySystemInterface.h"
-#include "BasicAttributeSet.h"
+#include "Characters/AttributeSets/BasicAttributeSet.h"
 #include "PlayerStateGameplay.generated.h"
 
 /**
@@ -18,6 +18,9 @@ class SPYVSCONKER_API APlayerStateGameplay : public APlayerState, public IAbilit
 
 public:
 	APlayerStateGameplay();
+
+	UPROPERTY(VisibleAnywhere);
+	bool bInitializedAttributes;
 
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 

@@ -1,9 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PlayerController_Gameplay.h"
-#include "HUDWidget.h"
-#include "PlayerStateGameplay.h"
+#include "Player/PlayerController_Gameplay.h"
+#include "UI/HUDWidget.h"
 #include "Blueprint/UserWidget.h"
 
 void APlayerController_Gameplay::CreateHUD()
@@ -49,17 +48,27 @@ bool APlayerController_Gameplay::SetRespawnCountdown_Validate(float RespawnTimeR
 	return true;
 }
 
+APlayerStateGameplay* APlayerController_Gameplay::GetCurrentPlayerState()
+{
+	APlayerStateGameplay* PS = GetPlayerState<APlayerStateGameplay>();
+	if (!PS)
+		return nullptr;
+	return PS;
+}
+
 //Server Only
 void APlayerController_Gameplay::OnPossess(APawn *InPawn)
 {
 	Super::OnPossess(InPawn);
 
+	
 	APlayerStateGameplay* PS = GetPlayerState<APlayerStateGameplay>();
 	if (PS)
 	{
 		// Init ASC with PS (Owner) and our new Pawn (AvatarActor)
 		PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, InPawn);
 	}
+	
 }
 
 void APlayerController_Gameplay::OnRep_PlayerState()

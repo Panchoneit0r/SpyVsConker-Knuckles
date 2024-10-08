@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PlayerStateGameplay.h"
-#include "CharacterBase.h"
-#include "HUDWidget.h"
-#include "PlayerController_Gameplay.h"
+#include "Player/PlayerStateGameplay.h"
+#include "Characters/CharacterBase.h"
+#include "UI/HUDWidget.h"
+#include "Player/PlayerController_Gameplay.h"
 
 APlayerStateGameplay::APlayerStateGameplay()
 {
@@ -15,6 +15,10 @@ APlayerStateGameplay::APlayerStateGameplay()
 
 	AttributeSetBase = CreateDefaultSubobject<UBasicAttributeSet>(TEXT("AttributeSetBase"));
 	NetUpdateFrequency  = 100.f;
+
+	bInitializedAttributes = false;
+
+	DeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
 }
 
 UAbilitySystemComponent* APlayerStateGameplay::GetAbilitySystemComponent() const

@@ -1,15 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "CharacterBase.h"
+#include "Characters/CharacterBase.h"
 
-#include "BasicAttributeSet.h"
-#include "PlayerController_Gameplay.h"
-#include "PlayerStateGameplay.h"
+#include "Characters/AttributeSets/BasicAttributeSet.h"
+#include "Player/PlayerController_Gameplay.h"
+#include "Player/PlayerStateGameplay.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Game/CartoonGameModeBase.h"
 
 // Sets default values
 ACharacterBase::ACharacterBase(const class FObjectInitializer& ObjectInitializer) :
@@ -70,7 +71,7 @@ float ACharacterBase::GetMaxHealth() const
 {
 	if(AttributeSetBase.IsValid())
 	{
-		return AttributeSetBase->GetHealth();
+		return AttributeSetBase->GetMaxHealth();
 	}
 	return 0.0f;
 }
@@ -93,7 +94,7 @@ void ACharacterBase::Die()
 		EffectTagsToRemove.AddTag(EffectRemoveOnDeathTag);
 		AbilitySystemComponent->RemoveActiveEffectsWithTags(EffectTagsToRemove);
 
-		AbilitySystemComponent->AddLooseGameplayTag(DeadTag);
+		AbilitySystemComponent->AddReplicatedLooseGameplayTag(DeadTag);
 	}
 	if (DeathMontage)
 	{
@@ -131,6 +132,15 @@ void ACharacterBase::RemoveCharacterAbilities()
 
 void ACharacterBase::FinishDying()
 {
+	if (GetLocalRole() == ROLE_Authority) 
+	{
+		ACartoonGameModeBase* GM = Cast<ACartoonGameModeBase>(GetWorld()->GetAuthGameMode());
+
+		if (GM) 
+		{
+			GM->PlayerDied(GetController());
+		}
+	}
 	Destroy();
 }
 
@@ -157,7 +167,7 @@ void ACharacterBase::PossessedBy(AController* NewController)
 		AddStartupEffects();
 		AddCharacterAbilities();
 
-		APlayerController_Gameplay* PC = Cast<APlayerController_Gameplay>(GetController());
+		APlayerController_Gameplay* PC = Cast<APlayerController_Gameplay>(NewController);
 		if (PC)
 		{
 			PC->CreateHUD();
@@ -224,6 +234,7 @@ void ACharacterBase::InitializeAttributes()
 {
 	if (!AbilitySystemComponent.IsValid())
 	{
+		UE_LOG(LogTemp, Error, TEXT("NO VALIDO"));
 		return;
 	}
 
@@ -233,15 +244,28 @@ void ACharacterBase::InitializeAttributes()
 		return;
 	}
 
+	/*
+	APlayerStateGameplay* PS = GetPlayerState<APlayerStateGameplay>();
+	if (!PS)
+		return;
+	if (PS->bInitializedAttributes)
+		return;
+	UE_LOG(LogTemp, Error, TEXT("Entre xd, %s()"), *GetName());
+	*/
+
 	// Can run on Server and Client
+	
 	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 	EffectContext.AddSourceObject(this);
 
+	
 	FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributes, 1, EffectContext);
 	if (NewHandle.IsValid())
 	{
-		AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent.Get());
+		AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), GetAbilitySystemComponent());
 	}
+	
+	//PS->bInitializedAttributes = true;
 }
 
 void ACharacterBase::AddStartupEffects()
@@ -268,6 +292,12 @@ void ACharacterBase::SetHealth(float Health)
 {
 	if (AttributeSetBase.IsValid())
 	{
+		if (Health != NULL) {
+			UE_LOG(LogTemp, Warning, TEXT("%f"), Health);
+		}
+		else {
+			UE_LOG(LogTemp, Warning, TEXT("Health es NULO"));
+		}
 		AttributeSetBase->SetHealth(Health);
 	}
 }

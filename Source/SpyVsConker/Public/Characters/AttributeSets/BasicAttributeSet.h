@@ -23,7 +23,7 @@ class SPYVSCONKER_API UBasicAttributeSet : public UAttributeSet
 
 public:
 
-	UPROPERTY(BlueprintReadOnly, Category = "Attributes", ReplicatedUsing=OnRep_Health)
+	UPROPERTY(BlueprintReadOnly, Category = "Health", ReplicatedUsing=OnRep_Health)
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UBasicAttributeSet, Health);
 
